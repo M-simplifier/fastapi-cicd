@@ -6,7 +6,7 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
-            - name: Set up devcontainer
+            - name: Run tests
               uses: devcontainers/ci@v0.3
               with:
                 runCmd: pytest
