@@ -1,0 +1,12 @@
+name: Run CI/CD
+on: [push]
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+            - name: Set up devcontainer
+              uses: devcontainers/ci@v0.3
+              with:
+                runCmd: pytest
