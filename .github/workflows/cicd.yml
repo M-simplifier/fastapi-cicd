@@ -10,3 +10,29 @@ jobs:
               uses: devcontainers/ci@v0.3
               with:
                 runCmd: pytest
+    deploy:
+        runs-on: ubuntu-latest
+        needs: test
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+            - id: "auth"
+              uses: "google-github-actions/auth@v1"
+              with:
+                credentials_json: "${{ secrets.GCLOUD_AUTH }}"
+            - name: Setup Google Cloud
+              uses: google-github-actions/setup-gcloud@v1
+              with:
+                project_id: "${{ secrets.PROJECT_ID }}"
+            - name: Configure Docker
+              run: |
+                gcloud auth configure-docker asia-northeast2-docker.pkg.dev
+            - name: set Tag
+              run: |
+                echo "TAG=${{ github.sha }}" >> $GITHUB_ENV
+            - name: Build
+              run: |
+                docker build -t asia-northeast2-docker.pkg.dev/${{ secrets.PROJECT_ID }}/cicd-test1/fastapi-cicd-image:${{ env.TAG }} .
+            - name: Push
+              run: |
+                docker push asia-northeast2-docker.pkg.dev/${{ secrets.PROJECT_ID }}/cicd-test1/fastapi-cicd-image:${{ env.TAG }}
